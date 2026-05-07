@@ -8,6 +8,7 @@ Rattracker is a Phase 1 static frontend prototype for a luxury minimalist rat br
 - **Local dev server**: `scripts/dev-server.mjs` serves the app at `http://localhost:4173`.
 - **Static build script**: `scripts/build.mjs` copies the app into `dist/` and validates that the entry page loads `/src/main.js`.
 - **Phase plan**: `docs/phase-plan.md` explains the intended product roadmap.
+- **App and UI overview**: `docs/app-ui-overview.md` documents the current screens, components, styling system, and included features.
 - **Database starter schema**: `supabase/schema.sql` defines the first `rats`, `litters`, and `tasks` tables.
 
 ## Requirements
@@ -74,6 +75,7 @@ The current dev server serves the source app from the repository root, not from 
 │   ├── main.js             # Dashboard data, markup, and UI rendering
 │   └── styles.css          # Luxury minimalist responsive styling
 ├── docs/
+│   ├── app-ui-overview.md  # Everything included in the current app and UI
 │   └── phase-plan.md       # Product build phases
 └── supabase/
     └── schema.sql          # Phase 1 database schema
