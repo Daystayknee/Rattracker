@@ -54,6 +54,26 @@ const ecosystemTiles = [
   ['Memory Garden', 'Legacy profiles, candles, descendants, life statistics, and remembrance archive.', '🕯️'],
 ];
 
+const recognitionTraits = [
+  ['Marking confidence', 'Berkshire blaze', '86%'],
+  ['Estimated coat', 'Velveteen rex carrier', '74%'],
+  ['Sibling similarity', 'Matches L-042B at 91%', '91%'],
+];
+
+const simulationGenes = {
+  'Rr × Rr': { rex: 75, standard: 25, doubleRex: 0, carrier: 50 },
+  'Rr × rr': { rex: 50, standard: 50, doubleRex: 0, carrier: 50 },
+  'Mm × mm': { mink: 50, black: 50, carrier: 50, dilute: 12 },
+};
+
+const colonySignals = [
+  ['Aggression index', '+14%', 'Orbit and Juniper cage incidents rising after enrichment removal.', 'warning'],
+  ['Respiratory trend', '+8%', 'Three mild sneeze logs cluster in Nursery C over 72 hours.', 'medical'],
+  ['Fertility line', '-11%', 'Lavender rex F3 has two consecutive small litters below baseline.', 'pregnant'],
+  ['Longevity signal', '+6 mo', 'Ice line descendants outperform colony lifespan curve.', 'healthy'],
+];
+
+
 function app() {
   document.querySelector('#root').innerHTML = `
     <div class="ambient-layer"><span></span><span></span><span></span></div>
@@ -105,6 +125,25 @@ function app() {
           <article class="card"><div class="card-head"><h3>Growth Replay</h3><span>baby → senior</span></div>${growthReplay()}</article>
         </section>
 
+        <section class="feature-lab-grid">
+          <article class="card recognition-card expandable">
+            <div class="card-head"><h3>Rat Image Recognition</h3><span>markings · coat · sibling match</span></div>
+            ${imageRecognition()}
+          </article>
+          <article class="card simulation-card expandable">
+            <div class="card-head"><h3>Genetic Simulation Engine</h3><span>Punnett-inspired probability model</span></div>
+            ${geneticSimulator()}
+          </article>
+          <article class="card intelligence-card expandable">
+            <div class="card-head"><h3>Colony Intelligence AI</h3><span>anomaly detection</span></div>
+            ${colonyIntelligence()}
+          </article>
+          <article class="card sensor-card expandable">
+            <div class="card-head"><h3>Smart Sensor Integration</h3><span>live cage environment</span></div>
+            ${sensorIntegration()}
+          </article>
+        </section>
+
         <section class="profile-section">
           <div class="section-title"><div><p class="eyebrow">Elegant animal profiles</p><h2>Featured Rats</h2></div><button>View all profiles</button></div>
           <div class="rat-grid">${rats.map(ratCard).join('')}</div>
@@ -138,4 +177,55 @@ function bondMap() { return `<div class="bond-map"><svg viewBox="0 0 320 240"><p
 function lifeTimeline() { return `<div class="life-rail"><span><b>Birth</b><small>May 2025</small></span><span><b>Pairing</b><small>Jan 2026</small></span><span><b>Litter</b><small>Feb 2026</small></span><span><b>Health</b><small>Mar 2026</small></span><span><b>Legacy</b><small>future</small></span></div>`; }
 function growthReplay() { return `<div class="growth-replay"><div class="age-card baby">Baby</div><input type="range" value="58" aria-label="Growth replay position"/><div class="age-card senior">Senior</div></div><p class="muted">Photo memories align with grams, coat changes, and behavior markers.</p>`; }
 
+function imageRecognition() { return `<div class="upload-zone"><input id="rat-photo" type="file" accept="image/*"/><label for="rat-photo"><span>📷</span><b>Upload rat photo</b><small>Preview image recognition for markings, coat type, and sibling comparison.</small></label><img id="photo-preview" alt="Uploaded rat preview" hidden /></div><div class="recognition-results">${recognitionTraits.map(([label, value, score]) => `<p><span>${label}</span><b>${value}</b><em>${score}</em></p>`).join('')}</div>`; }
+function geneticSimulator() { return `<div class="sim-controls"><label>Pairing genotype<select id="gene-pair"><option>Rr × Rr</option><option>Rr × rr</option><option>Mm × mm</option></select></label><button id="run-simulation">Run simulation</button></div><div id="sim-output" class="sim-output"></div>`; }
+function colonyIntelligence() { return `<div class="signal-stack">${colonySignals.map(([label, delta, copy, tone]) => `<article><span class="chip ${tone}">${delta}</span><h4>${label}</h4><p>${copy}</p></article>`).join('')}</div>`; }
+function sensorIntegration() { return `<div class="sensor-grid"><div><span id="temp-reading">72.4°F</span><small>Temperature</small></div><div><span id="humidity-reading">48%</span><small>Humidity</small></div><div><span id="air-reading">18 ppm</span><small>Air quality</small></div><div><span id="lux-reading">62%</span><small>Ventilation</small></div></div><p class="muted sensor-note">Live mock telemetry pulses every few seconds to demonstrate IoT-ready cage monitoring.</p>`; }
+
+function renderSimulation() {
+  const select = document.querySelector('#gene-pair');
+  const output = document.querySelector('#sim-output');
+  if (!select || !output) return;
+  const values = simulationGenes[select.value];
+  output.innerHTML = Object.entries(values).map(([trait, probability]) => `<p><span>${trait}</span><b style="--w:${probability}%"></b><em>${probability}%</em></p>`).join('');
+}
+
+function attachInteractions() {
+  const upload = document.querySelector('#rat-photo');
+  const preview = document.querySelector('#photo-preview');
+  upload?.addEventListener('change', () => {
+    const file = upload.files?.[0];
+    if (!file || !preview) return;
+    preview.src = URL.createObjectURL(file);
+    preview.hidden = false;
+    document.querySelector('.recognition-card')?.classList.add('analyzed');
+  });
+
+  document.querySelector('#run-simulation')?.addEventListener('click', renderSimulation);
+  document.querySelector('#gene-pair')?.addEventListener('change', renderSimulation);
+  renderSimulation();
+
+  const sensorTick = () => {
+    const temp = (71.8 + Math.random() * 1.8).toFixed(1);
+    const humidity = Math.round(45 + Math.random() * 8);
+    const air = Math.round(14 + Math.random() * 9);
+    const lux = Math.round(58 + Math.random() * 14);
+    document.querySelector('#temp-reading').textContent = `${temp}°F`;
+    document.querySelector('#humidity-reading').textContent = `${humidity}%`;
+    document.querySelector('#air-reading').textContent = `${air} ppm`;
+    document.querySelector('#lux-reading').textContent = `${lux}%`;
+    document.querySelector('.sensor-card')?.classList.toggle('sensor-alert', air > 20);
+  };
+  sensorTick();
+  setInterval(sensorTick, 3200);
+
+  document.querySelectorAll('.expandable').forEach(card => {
+    card.addEventListener('click', event => {
+      if (event.target.matches('input, select, option, button, label')) return;
+      card.classList.toggle('is-expanded');
+    });
+  });
+}
+
 app();
+attachInteractions();
